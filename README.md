@@ -27,6 +27,7 @@ Tagy:
   <!---
   Parents: jsou hierarchicky nadřazené štítky, použitelné v kombinaci pořad a série, tzn. mám dva tagy, jeden je pořad, druhý je série. U série je veden jako parent pořad, ke kterému série (a bonusy) patři.
 
+
   Pokud nemá parenta, nechávám prázdné <parents> </parents>, tagy bez parenta budou zařazeny do tagu služby (ten neposílate, je automaticky vytvořen u nás), Série nesmí být bez parenta
 
   Upozornění: Feed tagů musí jít od těch nejvyšší vrstvy po nejnižší (Kanály - pořady - série - playlisty) jinak by se mohlo stát, že se bude nejprve importovat tag s parent ID tagu, který u nás ještě nemáme.
@@ -40,6 +41,11 @@ Tagy:
   <!---
    Origin - odkaz na původní destinaci obsahu na vaší straně, například importuji rubriku krimi, zde dávám odkaz: https://www.novinky.cz/krimi/. Slouží k našemu debugu, v budoucnu může být i produktově využit k prokliku na obsah.
   --->
+  <imageSquare url="//d11-a.sdn.szn.cz/d_11/c_img_G_J/NpACRC.jpeg"/>
+  <!--- ImageSquare - Ikonka pořadu --->
+  <imageHeader url="//d11-a.sdn.szn.cz/d_11/c_img_G_J/RDKCRB.jpeg"/>
+  <!--- ImageHeader - Hlavička pořadu --->
+
  </tag>
 
  <!---
@@ -59,13 +65,15 @@ Epizody:
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <episodes>
- <episode id='10018725' name='TEASER: Tanec s párky Honzy Tuny' publish='1531916949' expiration='1532916949' productPlacement='1'>
+  <episode id='10018725' name='TEASER: Tanec s párky Honzy Tuny' publish='1531916949' expiration='1532916949' expirationHomepage='1533916949' productPlacement='1' originViews='20700' >
   <!---
     id: vaše id epizody 
     name: název epizody, doporučená délka je 75 znaků.
     publish: datum publikace jako unix timestamp
     expiration: datum expirace jako unix timestamp, znamená SKUTEČNÉ smazání ze systému (ne deleted = 1, ale DELETE).
     productPlacement: zda epizoda obsahuje productPlacement (0/1)
+    expirationHomepage: datum expirace doporučování na HP jako unix timestamp, do té doby se bude epizoda posílat i do homepage boxíku. Nesmí být větší než 2147483647 (rok 2038). Atribut je nepovinný, pokud nebude vyplněn nebo bude vyplněn špatně, bude expiraci určovat doporučování.
+    originViews: Počet shlédnutí. Bude přičten k shlédnutí na Videoportále
   --->
   <perex>Sledujte pondělní A DOST! o tom, jestli párky v rohlíku vůbec obsahují maso.</perex>
   <!---
