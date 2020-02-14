@@ -15,7 +15,7 @@ Tagy:
    name: název štítku, doporučená délka je 15 znaků v případě type='show', v případě type='playlist' je to 27 znaků
    type: type = 'channel' / 'show' / 'season' / 'playlist' (nemůže být prázdný) 
        štítek obsahu označený jako:
-          show je pořad (může obsahovat pouze série a epizody)
+          show je pořad (může obsahovat pouze série nebo epizody)
           season je série pořadu (může být pouze v pořadu a obsahuje pouze epizody)
           playlist je skupina videí, které nejsou zařazeny do pořadu (pořad bez sérií v podstatě)
           channel je kanál neboli soubor pořadů a playlistů (Například kanál Zábava obsahující vtipné pořady a playlisty)  
