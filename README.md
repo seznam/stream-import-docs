@@ -1,169 +1,205 @@
-XML bude rozdeleno do dvou volani.
+![](assets/stream-logo.svg)
 
-V jednom si nacteme vsechny tagy a jejich strukturu.
+# Stream.cz Import API Documentation
 
-Ve druhem volani si nacteme veskere epizody. Ty v sobe budou mit vazbu na dane tagy.
+Welcome to the Stream.cz Import API documentation where you will find all necessary
+information to submit data to stream.cz videoportal.
 
+## REST Import API
 
-Tagy:
+The documentation is available in the `openapi.json` as an OpenAPI v3 JSON definition.
+The documentation can be viewed in any OpenAPI-capable viewer such as ReDoc or Swagger UI.
+
+## XML Feed
+
+The XML file will be split into two parts and subsequent calls. In the first one, we need
+to submit a tag to the videoportal in order to file an episode under it. The second one is
+to create an episode under the previously created tag.
+
+### Tag's XML Example
+
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <tags>
- 
- <tag id='10010412' type='show' name='A DOST!'> 
-  <!-- tag - Štítek obsahu, 
-   name: název štítku, doporučená délka je 15 znaků v případě type='show', v případě type='playlist' je to 27 znaků
-   type: type = 'channel' / 'show' / 'season' / 'playlist' (nemůže být prázdný) 
-       štítek obsahu označený jako:
-          show je pořad (může obsahovat pouze série nebo epizody)
-          season je série pořadu (může být pouze v pořadu a obsahuje pouze epizody)
-          playlist je skupina videí, které nejsou zařazeny do pořadu (pořad bez sérií v podstatě)
-          channel je kanál neboli soubor pořadů a playlistů (Například kanál Zábava obsahující vtipné pořady a playlisty)  
-   id: ID štítku (int/string), určujete si sami, v případě použití import-api pracujete s obsahem na základě VAŠEHO id, nikoliv našeho
-  --->
-  <parents>
-   <parent id='1000124'/>
-   <parent id='12142124'/>
-  <!---
-  Parents: jsou hierarchicky nadřazené štítky, použitelné v kombinaci pořad a série, tzn. mám dva tagy, jeden je pořad, druhý je série. U série je veden jako parent pořad, ke kterému série (a bonusy) patři.
 
+    <tag id='10010412' type='show' name='A DOST!'>
+    <!-- tag - content's tag,
+    name: name of the tag, recommended length 15 characters for `show` and 27 chars for `playlist`
+    type: type = 'channel' / 'show' / 'season' / 'playlist' (not nullable, cannot be empty)
+          channel (kanál) - set of shows and playlists (e.g. channel "Zábava")
+          show (pořad) - contains only series/seasons or episodes
+          season - a serie of a show (filed only under a show and can contain only episodes)
+          playlist - a set of episodes which are not filed under a show (set of episodes)
+    id: tag's ID (int/string), determined on your side and in case of using the Import API
+    you are working with this ID
+    -->
+        <parents>
+            <parent id='1000124' />
+            <parent id='12142124' />
+            <!--
+            Parents: hierarchically ordered tags, usable in a combination of a show and season.
+            E.g. I have two tags, one is a show and the other one is a season. The show is
+            a parent to the season which contains episodes and bonuses.
 
-  Pokud nemá parenta, nechávám prázdné <parents> </parents>, tagy bez parenta budou zařazeny do tagu služby (ten neposílate, je automaticky vytvořen u nás), Série nesmí být bez parenta
+            In case of no parent, just empty `<parents></parents>` is allowed. Tags without
+            a parent (orphaned tags) will be filed under the service tag which is associated
+            with you automatically. A season doesn't have to have a parent.
 
-  Upozornění: Feed tagů musí jít od těch nejvyšší vrstvy po nejnižší (Kanály - pořady - série - playlisty) jinak by se mohlo stát, že se bude nejprve importovat tag s parent ID tagu, který u nás ještě nemáme.
-  --->
-  </parents>
-  <perex>Jan Tuna vás provede záplavou zboží a ukáže vám, kteří obchodníci z vás jen tahají peníze. Testy potravin, produktů a služeb vám prozradí, co je opravdu kvalitní a spolehlivé. Řekněte šuntům A DOST!</perex>
-  <!---
-  Perex - perex, který se zobrazí na Streamu u pořadu. Doporučená délka je 120 znaků. !!! Je vyžadováno v případě tag.type = "show". !!!
-  --->
-  <origin>https://www.stream.cz/porady/a-dost</origin>
-  <!---
-   Origin - odkaz na původní destinaci obsahu na vaší straně, například importuji rubriku krimi, zde dávám odkaz: https://www.novinky.cz/krimi/. Slouží k našemu debugu, v budoucnu může být i produktově využit k prokliku na obsah.
-  --->
-  <imageSquare url="//d11-a.sdn.szn.cz/d_11/c_img_G_J/NpACRC.jpeg"/>
-  <!--- ImageSquare - Ikonka pořadu --->
-  <imageHeader url="//d11-a.sdn.szn.cz/d_11/c_img_G_J/RDKCRB.jpeg"/>
-  <!--- ImageHeader - Hlavička pořadu --->
+            Warning: feed of tags must go chronologically from the highest level
+            (channel - show - season - playlist) otherwise, there can be a discrepancy between
+            the tag's parents which don't exist yet.
+            -->
+        </parents>
+        <perex>
+          Jan Tuna vás provede záplavou zboží a ukáže vám, kteří obchodníci z vás jen
+          tahají peníze. Testy potravin, produktů a služeb vám prozradí, co je opravdu
+          kvalitní a spolehlivé. Řekněte šuntům A DOST!
+        </perex>
+        <!--
+        Perex - description (perex), which is displayed on the show's page. Recommended
+        length is 120 characters. Required for type = "show".
+        -->
+        <origin>https://www.stream.cz/porady/a-dost</origin>
+        <!---
+        Origin - a link to the original destianation of the content on your side.
+        E.g. I am importing the Krimi section from novinky.cz, I will put the link
+        https://www.novinky.cz/krimi/. Used for debugging purposes mainly.
+        -->
+        <imageSquare url="//d11-a.sdn.szn.cz/d_11/c_img_G_J/NpACRC.jpeg" />
+        <!-- ImageSquare - Icon of the show -->
+        <imageHeader url="//d11-a.sdn.szn.cz/d_11/c_img_G_J/RDKCRB.jpeg" />
+        <!-- ImageHeader - Header of the show -->
 
- </tag>
+    </tag>
 
- <!---
-    Zde jen ukázka, jak založit sérii k pořadu.
- --->
- <tag id='2190' type='season' name='Epizody'>
-  <parents>
-   <parent id='10010412'/> 
-  </parents>
- </tag>
+    <!--
+    Here is an example how to create a season to a show.
+    -->
+    <tag id='2190' type='season' name='Epizody'>
+        <parents>
+            <parent id='10010412' />
+        </parents>
+    </tag>
 </tags>
-
-
-
 ```
-Epizody:
+
+### Episodes example
+
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <episodes>
-  <episode id='10018725' name='TEASER: Tanec s párky Honzy Tuny' publish='1531916949' expiration='1532916949' expirationHomepage='1533916949' productPlacement='1' originViews='20700' >
-  <!---
-    id: vaše id epizody 
-    name: název epizody, doporučená délka je 75 znaků.
-    publish: datum publikace jako unix timestamp
-    expiration: datum expirace jako unix timestamp, znamená SKUTEČNÉ smazání ze systému (ne deleted = 1, ale DELETE).
-    productPlacement: zda epizoda obsahuje productPlacement (0/1)
-    expirationHomepage: datum expirace doporučování na HP jako unix timestamp, do té doby se bude epizoda posílat i do homepage boxíku. Nesmí být větší než 2147483647 (rok 2038). Atribut je nepovinný, pokud nebude vyplněn nebo bude vyplněn špatně, bude expiraci určovat doporučování.
-    originViews: Počet shlédnutí. Bude přičten k shlédnutí na Videoportále
-  --->
-  <perex>Sledujte pondělní A DOST! o tom, jestli párky v rohlíku vůbec obsahují maso.</perex>
-  <!---
-      Perex - perex, který se zobrazí na Streamu u epizody, doporučená délka je 125 znaků.
-  --->
-  <origin>https://www.stream.cz/adost/10018725-teaser-tanec-s-parky-honzy-tuny</origin>
-  <!---
-      Origin - odkaz na původní destinaci obsahu na vaší straně, například adresa konkrétní epizody na původní službě. Slouží k debugu.
-  --->
-  <images>
-    <image url='//d11-a.sdn.szn.cz/d_11/c_img_H_J/XV9Fv8.jpeg'>
-       <sources>
-          <source label="Routers" url="http://www.reuters.com/">
-       </sources>
-    <image/>
-    <!---
-     Image
-         url: link na obrázek, při výdeji bude použito zmenšení a výřez v poměru 16:9. Na Streamu bude obrázek použit ve dvou velikostech se stejným poměrem.
-              link musí být bez http/https a musí mít na začátku dvě lomítka (viz vzor výše)
+    <episode
+      id='10018725'
+      name='TEASER: Tanec s párky Honzy Tuny'
+      publish='1531916949'
+      expiration='1532916949'
+      expirationHomepage='1533916949'
+      productPlacement='1'
+      originViews='20700'
+    >
+    <!--
+    id: your own ID of the episode
+    name: name of the episode, recommended length is 75 chars
+    publish: date of publication as a UNIX timestamp
+    expiration: date of expiration (when to remove the video from the site) as a UNIX timestamp
+    productPlacement: whether episode contains product placement (0/1)
+    expirationHomepage: date of expiration on Seznam.cz Homepage recommending system
+    (as UNIX timestamp). Cannot be larger than 2147483647 (year 2038). It is not compulsory,
+    if empty the recommending expiration will be done by our internal systems.
+    originViews: Number of views that will be added to our own views during import
+    (will be shown on the web).
+    -->
+        <perex>Sledujte pondělní A DOST! o tom, jestli párky v rohlíku vůbec obsahují maso.</perex>
+        <!--
+        Perex - description (perex), which is displayed on the episode's page.
+        The recommended length is 125 characters.
+        -->
+        <origin>https://www.stream.cz/adost/10018725-teaser-tanec-s-parky-honzy-tuny</origin>
+        <!--
+        Origin - a link to the original content on your site. Used for debugging.
+        -->
+        <images>
+            <image url='//d11-a.sdn.szn.cz/d_11/c_img_H_J/XV9Fv8.jpeg'>
+                <sources>
+                    <source label="Routers" url="http://www.reuters.com/"></source>
+                </sources>
+            </image>
+            <!--
+            Image
+            url: link to the image, when publishing we will resize it and use a cutout in
+            16:9 ratio. The link must be without protocol (http, https) and must start with
+            just two slashes (//) as seen in the example.
 
+            In case the image is not on Seznam CDN we can't process it.
 
-            V případě, že obrázek nebude v CDN Seznam.cz (automaticky zdetekujeme), bude nahrán do ní a použit výdej z ní.
+            source: name of the image's source (e.g. Reuters)
+            -->
+        </images>
+        <video
+          duration='37'
+          url='https://v11-a.sdn.szn.cz/v_11/vmd/10027773?fl=mdk,f117c301|'
+          isLive='0'
+        >
+            <source label='Reuters' url='http://www.reuters.com' />
+        </video>
+        <!--
+        Video
+        duration: duration of the video in seconds
+        url: link to the video on Seznam CDN
 
-         source: název zdroje (např. Reuters)
-                 (Momentálně předpokládáme, že zdroj je maximálně jeden)
-    --->
-  </images>
-  <video duration='37' url='https://v11-a.sdn.szn.cz/v_11/vmd/10027773?fl=mdk,f117c301|' isLive='0'>
-    <source label='Reuters' url='http://www.reuters.com'/>
-  </video>
-  <!---
-      Video
-          duration: délka v sekundách
-          url: link videa, v případě, že video nebude v CDN, bude založeno nahrání videa do CDN později.
+        source: name of the video's source (e.g. Reuters)
+        -->
+        <advert>
+            <preroll />
+            <midroll time='13' />
+            <postroll />
+            <!--
+            Advert types:
+            - preroll: ad at the beginning of the video
+            - midroll: ad in the video, time is for a timestamp in seconds when the ad can play
+            - postroll: ad at the end of the video
 
-         source: název zdroje (např. Reuters)
-                 (Momentálně předpokládáme, že zdroj je maximálně jeden)
-  --->
-  <advert >
-   <preroll />
-   <midroll time='13' />
-   <postroll />
-   <!---
-       Advert 
-           preroll značí, zda se může přehrát reklama na začátku
-           midroll značí, zda a kde (označeno jako time v sekundách) se může hrát midroll
-           postroll značí, zda se může přehrát reklama na konci
+            These items are used for controlling the number of ads on the video. In some
+            cases, we don't want any ads on the
+            video which is achieved by leaving the `<advert>` empty.
+            -->
+        </advert>
+        <inTags>
+            <inTag id='2190' />
+            <!-- Categorization of an episode to tags. -->
+        </inTags>
+        <originTag>10010412</originTag>
+        <!--
+        Direct parent of the episode. If the episode belongs to multiple tags we need to
+        show only one on the episode page.
+        originTag is not required and if not set the originTag will be automatically assumed.
 
-       Časy midrollů slouží k zobrazení reklamy ve vhodném okamžiku dle definice služby.
+        Warning: originTag cannot be a "season" tag
+        -->
+        <geoblocks>
+            <geoblock code='cz' permission='allow' />
+            <!--
+            Block or allow video to be played based on the geographical location of the user.
 
-       Všechny tyto položky jsou zde primárně z důvodu možnosti označit video, u kterého je nevhodné
-       přehrávat reklamu z etických důvodu atd. vždy podléha kontrole. V případě, že nechceme u videa
-       vůbec přehrávat reklamu, necháváme advert prázdný. 
-
-       V případě, že nechceme v epizodě reklamu, necháváme advert prázdný.
-   --->
-  </advert>
-  <inTags>
-   <inTag id='2190' />
-   <!---
-   Do jakých štítků tato epizoda patří.
-   --->
-  </inTags>
-  <originTag>10010412</originTag>
-   <!---
-       Přímí rodič epizody. Pokud epizoda patří pod více tagů, tak v náhledu epizody na webovce budeme mít vždy odkaz jen na jednoho z rodičů.
-       Příklad: Máme epizodu z 'A DOST!' v tagu 'Epizody', v tagu 'To nej z A DOST!' a v tagu 'Honza Tuna'. Při zobrazení na webovce chceme, aby tam byl vždy odkaz na pořad 'A DOST!'. Dáme tedy jako originTag ID pořadu 'A DOST!'
-       originTag není povinný, pokud jej nezadáte, tak si sami určíme přímého rodiče
-       !!! Pozor !!! originTag nesmí být tag s kategorií 'season'
-   --->
-  <geoblocks>
-   <geoblock code='cz' permission='allow' />
-   <!---
-     Geoblokací buď povolíme (allow) nebo zakážeme (deny) v lokalitách. Například: code=cz a permission=allow znamená, že hrajeme pouze v ČR a nikde jinde.
-   --->
-  </geoblocks>
-  <editorTags>
-     <editorTag>Tuna<editorTag/>
-     <editorTag>Testy<editorTag/>
-     <!---
-        Doprovodné editorské štítky vašich redakcí.
-     --->
-  </editorTags>
-  <authors>
-       <author>Karel Sestak</author>
-  </authors>
- </episode>
- <next url="" /> 
- <!---
-     Zde patří link, kde máme pokračovat v importu. Tedy například na /api bude v next url /api/20, čímž načteme další položky. Pozor, import může trvat dlouho, proto je nutné vymyslet limit a offset tak, aby se indexy v průběhu neposunuly.
- --->
+            code: 2-letter country code ("cz")
+            permission: <allow, deny> if we want to block or allow the country
+            -->
+        </geoblocks>
+        <editorTags>
+            <editorTag>Tuna</editorTag>
+            <editorTag>Testy</editorTag>
+            <!--
+            Editorial tags from the back office.
+            -->
+        </editorTags>
+        <authors>
+            <author>Karel Sestak</author>
+        </authors>
+    </episode>
+    <next url="" />
+    <!--
+    Path to next XML file to import. Used for pagination. Bear in mind the import can take
+    a long time and because of it the paging should be static and the offset constant.
+    -->
 </episodes>
 ```
