@@ -69,7 +69,11 @@ to create an episode under the previously created tag.
         <!-- ImageSquare - Icon of the show -->
         <imageHeader url="//d11-a.sdn.szn.cz/d_11/c_img_G_J/RDKCRB.jpeg" />
         <!-- ImageHeader - Header of the show -->
-
+       
+        <!-- 
+        hidden (Optional) - episode is hidden on Stream if hidden="1"
+        -->
+        <flags hidden="0" />
     </tag>
 
     <!--
@@ -195,6 +199,11 @@ to create an episode under the previously created tag.
         <authors>
             <author>Karel Sestak</author>
         </authors>
+        
+        <!-- 
+        hidden (Optional) - episode is hidden on Stream if hidden="1"
+        -->
+        <flags hidden="0" />
     </episode>
     <next url="" />
     <!--
